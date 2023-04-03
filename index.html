@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <title>Weather App</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD"
+      crossorigin="anonymous"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Concert+One&family=Lobster&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Concert+One&family=Dosis:wght@200;300;400;500;600;700;800&family=Lobster&display=swap" rel="stylesheet">  
+<link rel="stylesheet" href="src/style.css" />
+  </head>
+  <body>
+      <style>
+        h1 {
+  color: rgb(106, 106, 112);
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 24px;
+  font-weight: 100;
+  height: 28px;
+  line-height: 28.8px;
+  text-align: left;
+  margin: 0;
+}
+ul {
+  margin: 0 0 10px;
+  padding: 0;
+}
+li {
+  color: blueviolet;
+  font-size: 16px;
+  font-weight: 100;
+  height: 19px;
+  line-height: 1;
+  list-style: none;
+}
+.weatherapp {
+  border: 1px;
+  padding: 15px;
+  margin: 20px auto;
+  border-radius: 10px;
+  max-width: 600px;
+}
+.temperature {
+  color: aqua;
+  font-size: 64px;
+  font-weight: 400;
+  line-height: 1;
+}
+.form-control btn {
+  margin-bottom: 10px;
+}
+
+        </style>
+    <div class="container">
+      <div class="card" style="width: 45rem">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-2">New York</div>
+            <div class="col-2">Houston</div>
+            <div class="col-2">Paris</div>
+            <div class="col-2">Tokyo</div>
+            <div id = "location-temp" class="col-2">
+              <button class = "location-temp">
+                Current Location Temperature
+              </button>
+            </div>
+          </div>
+          <br />
+          <form id="search-form" class="mb-3">
+            <div class="row">
+              <div class="col-9">
+                <input
+                  type="search"
+                  placeholder="Type a city.."
+                  class="form-control"
+                  id="city-input"
+                  autocomplete="off"
+                />
+              </div>
+              <div class="col-3">
+                <input
+                  type="submit"
+                  value="Search"
+                  class="btn btn-primary w-100"
+                />
+              </div>
+            </div>
+          </form>
+            <br />
+            <div class="current-city">
+            <div id="city-now" class="col-12" ><strong>Albany</strong></div>
+            <div id="date-time" class="col-12">Friday 5:00 PM</div>
+            <div class="col-12">Sunny</div>
+          </div>
+          <p>
+          <p>
+          <h1 id="current-temp" class="current-temp">
+            <strong>10°</strong> C
+          </h1>
+          </p>
+            <div class="clearfix weather-temperature">
+                                <div class="float-left">
+                  <strong id="temperature"></strong
+                  >
+                </div>
+              </div>
+          </p>
+          <div class="col-6">
+              <ul>
+                <li>Humidity: <span id="humidity"></span>%</li>
+                <li>Wind: <span id="wind"></span> km/h</li>
+              </ul>
+            </div>
+            <div class="row">
+              <div class="col-2">
+              Saturday
+              <br/>
+              <img src="https://cdn-icons-png.flaticon.com/512/2580/2580627.png" width="65px"/>
+              <br />
+              55°
+              </div>
+            <div class="col-2">
+              Sunday
+              <br />
+              <img src="https://cdn-icons-png.flaticon.com/512/2580/2580627.png" width="65px"/>
+              <br />
+              62°
+            </div>
+            <div class="col-2">
+              Monday <br />
+              <img src="https://cdn-icons-png.flaticon.com/512/4724/4724094.png" width="65px"/>
+              <br />
+              59°
+            </div>
+            <div class="col-2">
+              Tuesday <br />
+              <img src="https://cdn-icons-png.flaticon.com/512/6735/6735034.png" width="65px"/>
+              <br />
+              63°
+            </div>
+            <div class="col-2">
+              Wednesday <br />
+              <img src="https://cdn-icons-png.flaticon.com/512/2580/2580627.png" width="65px"/>
+              <br />
+              65°
+            </div>
+            <div class="weather-forecast" id="forecast"></div>
+        </div>
+        </div>
+      </div>
+    </div>
+<a href="https://github.com/YuliiaRozd/Homework_week_6/blob/main/index.html">Open-source code on GitHub</a>
+    <script >
+function formatDate(timestamp) {
+  let date = new Date(timestamp);
+  let hours = date.getHours();
+  if (hours < 10) {
+    hours = `0${hours}`;
+  }
+  let minutes = date.getMinutes();
+  if (minutes < 10) {
+    minutes = `0${minutes}`;
+  }
+
+  let days = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
+  let day = days[date.getDay()];
+  return `${day} ${hours}:${minutes}`;
+}
+
+function formatDay(timestamp) {
+  let date = new Date(timestamp * 1000);
+  let day = date.getDay();
+  let days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+  return days[day];
+}
+
+function displayForecast(response) {
+  let forecast = response.data.daily;
+
+  let forecastElement = document.querySelector("#forecast");
+
+  let forecastHTML = `<div class="row">`;
+  forecast.forEach(function (forecastDay, index) {
+    if (index < 6) {
+      forecastHTML =
+        forecastHTML +
+        `
+      <div class="col-2">
+        <div class="weather-forecast-date">${formatDay(forecastDay.dt)}</div>
+        <img
+          src="http://openweathermap.org/img/wn/${
+            forecastDay.weather[0].icon
+          }@2x.png"
+          alt=""
+          width="42"
+        />
+        <div class="weather-forecast-temperatures">
+          <span class="weather-forecast-temperature-max"> ${Math.round(
+            forecastDay.temp.max
+          )}° </span>
+          <span class="weather-forecast-temperature-min"> ${Math.round(
+            forecastDay.temp.min
+          )}° </span>
+        </div>
+      </div>
+  `;
+    }
+  });
+
+  forecastHTML = forecastHTML + `</div>`;
+  forecastElement.innerHTML = forecastHTML;
+}
+
+function getForecast(coordinates) {
+  let apiKey = "2ff29bed3181c3526c35cc5408037f85";
+  let apiUrl = `https://api.openweathermap.org/data/2.5/onecall?lat=${coordinates.lat}&lon=${coordinates.lon}&appid=${apiKey}&units=metric`;
+  axios.get(apiUrl).then(displayForecast);
+}
+
+function displayTemperature(response) {
+  let temperatureElement = document.querySelector("#temperature");
+  let cityElement = document.querySelector("#city");
+  let descriptionElement = document.querySelector("#description");
+  let humidityElement = document.querySelector("#humidity");
+  let windElement = document.querySelector("#wind");
+  let dateElement = document.querySelector("#date");
+  let iconElement = document.querySelector("#icon");
+
+  celsiusTemperature = response.data.main.temp;
+
+  temperatureElement.innerHTML = Math.round(celsiusTemperature);
+  cityElement.innerHTML = response.data.name;
+  descriptionElement.innerHTML = response.data.weather[0].description;
+  humidityElement.innerHTML = response.data.main.humidity;
+  windElement.innerHTML = Math.round(response.data.wind.speed * 3.6);
+  dateElement.innerHTML = formatDate(response.data.dt * 1000);
+  iconElement.setAttribute(
+    "src",
+    `http://openweathermap.org/img/wn/${response.data.weather[0].icon}@2x.png`
+  );
+  iconElement.setAttribute("alt", response.data.weather[0].description);
+
+  getForecast(response.data.coord);
+}
+
+function search(city) {
+  let apiKey = "2ff29bed3181c3526c35cc5408037f85";
+  let apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+  axios.get(apiUrl).then(displayTemperature);
+}
+
+function handleSubmit(event) {
+  event.preventDefault();
+  let cityInputElement = document.querySelector("#city-input");
+  search(cityInputElement.value);
+}
+
+let form = document.querySelector("#search-form");
+form.addEventListener("submit", handleSubmit);
+
+search("New York");
+    
+    const axios = window.axios;
+  let apiKey = "5f472b7acba333cd8a035ea85a0d4d4c";
+  let apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+  </script>
+  </body>
+</html>
